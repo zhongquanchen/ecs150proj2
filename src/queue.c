@@ -111,6 +111,23 @@ int queue_delete(queue_t queue, void *data)
 
 int queue_iterate(queue_t queue, queue_func_t func, void *arg, void **data)
 {
+    if(queue==NULL||fun==NULL){
+        return -1;
+    }
+    if(queue->oldest==NULL){
+        return 0;
+    }
+    int retval =0;
+    struct ele_q *itr =malloc(sizeof(struct ele_q));
+    itr = queue->oldest;
+    for(int i=0; i<queue->size; i++){
+        retval = func(itr->element_ptr,arg);
+        if(retval==1){
+            data = iterator->element_ptr;
+            break;
+        }
+        itr=itr->next_ptr;
+    }
     return 0;
 }
 
