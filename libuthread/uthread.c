@@ -11,7 +11,14 @@
 #include "queue.h"
 #include "uthread.h"
 
-/* TODO Phase 2 */
+enum state {running, ready, blocked, dead};
+
+struct thread{
+  uthread_t u_tid;
+  enum state u_state;
+  uthread_ctx_t u_context;
+  void* u_stack;
+}
 
 void uthread_yield(void)
 {
@@ -21,6 +28,12 @@ void uthread_yield(void)
 uthread_t uthread_self(void)
 {
 	/* TODO Phase 2 */
+}
+
+void initialize()
+{
+
+  return;
 }
 
 int uthread_create(uthread_func_t func, void *arg)
