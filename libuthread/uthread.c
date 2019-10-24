@@ -38,4 +38,3 @@ int uthread_join(uthread_t tid, int *retval)
 	/* TODO Phase 2 */
 	/* TODO Phase 3 */
 }
-

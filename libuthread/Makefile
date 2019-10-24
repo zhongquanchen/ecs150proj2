@@ -21,7 +21,10 @@ libuthread.a: $(objs)
 		ar rcs $@ $<
 
 queue.o: queue.c queue.h
-	gcc -c queue.c 
+	 	$(CC) -c -o $@ $<
+
+uthread.o: uthread.c uthread.h
+		$(CC) -c -o $@ $<
 
 # %.o: %.c
 #		@echo "CC $@"
@@ -30,5 +33,3 @@ queue.o: queue.c queue.h
 clean:
 		@echo "clean"
 		$(Q) rm -f $(lib) $(objs)
-
-
