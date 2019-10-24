@@ -82,11 +82,11 @@ int queue_delete(queue_t queue, void *data)
     for(int i=0; i<queue->size; i++) {
         if (temp->next_ptr->element_ptr == data) {
             //MARK:- do the following
-            printf("wanted value found at %d; adr is %p\n", i, temp->next_ptr);
             if(i==0){//found at oldest
               free(temp);
               temp = queue->oldest;
-              queue_dequeue(queue,tempbuffer);
+              queue_dequeue(queue,&tempbuffer);
+              return 0;
             }else if(i==queue->size-1){//found at newest
               queue->newest = temp;
               free(temp->next_ptr);
@@ -122,7 +122,6 @@ int queue_iterate(queue_t queue, queue_func_t func, void *arg, void **data)
   for(int i=0; i<queue->size; i++){
       retval = func(itr->element_ptr,arg);
       if(retval==1){
-        printf("NOW RETVAL IS 1\n");
           *data = itr->element_ptr;
           break;
       }
@@ -138,37 +137,3 @@ int queue_length(queue_t queue)
     }
     return queue->size;
 }
-
-// int main(){
-//     queue_t myQptr = queue_create();
-//     void* addr1 = 1;
-//     void* addr2 = 10;
-//     void* addr3 = 4;
-//     void* addr4 = 6;
-//     int retval = queue_enqueue(myQptr,addr1);
-//     printf("retval %d\n", retval);
-//     printf("size is, %d\n", queue_length(myQptr));
-//     retval = queue_enqueue(myQptr,addr2);
-//     retval = queue_enqueue(myQptr,addr3);
-//     retval = queue_enqueue(myQptr,addr4);
-//
-//     queue_delete(myQptr,addr4);
-//
-//     printf("the oldest element contains addr%p\n",myQptr->oldest->element_ptr);
-//     printf("the newest element contains addr%p\n",myQptr->newest->element_ptr);
-//
-//     void* newaddr1;
-//     void* newaddr2;
-//
-// //    queue_dequeue(myQptr,&newaddr1);
-// //    printf("popped oldest element contains addr %d\n", newaddr1);
-// //    queue_dequeue(myQptr,&newaddr2);
-// //    printf("popped oldest element contains addr%p\n", newaddr2);
-// //
-//     printf("retval %d\n", retval);
-//     printf("size %d\n", queue_length(myQptr));
-//
-//     //queue_delete(myQptr, 10);
-//
-//     queue_destroy(myQptr);
-// }

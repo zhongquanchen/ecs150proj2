@@ -93,7 +93,6 @@ void test_queue_delete(void)
 
     for (int i = 0; i < sizeof(data) / sizeof(data[0]); i++)
         assert(queue_delete(q, (void*)&data[i]) == 0);
-    assert(q == NULL);
 
     printf("completed test queue delete\n");
 }
@@ -103,5 +102,6 @@ int main(void)
     test_create();
     test_queue_enqueue();
     test_queue_delete();
+    test_iterator();
 	  return 0;
 }
