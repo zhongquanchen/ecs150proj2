@@ -12,6 +12,7 @@
 #include "uthread.h"
 
 #define UTHREAD_STACK_SIZE 32768
+#define USHRT_MAX 32767
 
 enum state {Running, Ready, Blocked, Zombie};
 static queue_t running;
@@ -27,7 +28,7 @@ struct thread{
   int retval;
   uthread_ctx_t* u_context;
   void* u_stack;
-}
+};
 
 void uthread_yield(void)
 {
@@ -45,10 +46,10 @@ void initialize()
 
 	running = queue_create();
 	ready = queue_create();
-	bloked = queue_create();
+	blocked = queue_create();
 	zombie = queue_create();
 
-	struct thread* main = mallloc(sizedof(struct thread));
+	struct thread* main = malloc(sizeof(struct thread));
 
 	main->u_tid = num_thread;//which is 0 right now
 	main->u_state = Running;
