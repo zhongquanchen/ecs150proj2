@@ -139,16 +139,16 @@ void uthread_exit(int retval)
 int uthread_join(uthread_t tid, int *retval)
 {
 //  //placeholder
-//	while(1){
-//    //printf("length of running is%d\n",queue_length(running));
-//    //printf("length of ready is%d\n",queue_length(ready));
-//    //printf("main yielding\n");
-//    if(queue_length(ready)==0){
-//      return(-1);
-//    }
-//    uthread_yield();
-//  }
-//    return 0;
-//	/* TODO Phase 3 */
+    while(1){
+    //printf("length of running is%d\n",queue_length(running));
+    //printf("length of ready is%d\n",queue_length(ready));
+    //printf("main yielding\n");
+    if(queue_length(ready)==0){
+      return(-1);
+    }
+    uthread_yield();
+    }
+    return 0;
+	/* TODO Phase 3 */
     return 0;
 }

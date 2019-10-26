@@ -9,28 +9,39 @@
 
 #include "uthread.h"
 
-int hello2(void* arg)
+int hello3(void* arg)
 {
-    printf("at hello 2!\n");
+    printf("hello from hello 3\n");
     return 0;
 }
 
-int hello(void* arg)
+int hello2(void* arg)
 {
-	printf("Hello world!\n");
-    uthread_t tid = uthread_create(hello2, NULL);
-    printf("after create before yield\n");
+    printf("hello from hello 2\n");
     uthread_yield();
-    printf("after created thread\n");
-	return 0;
+    printf("hello 2 after yield\n");
+    return 0;
+}
+
+int hello1(void* arg)
+{
+    print("hello from hello 1\n");
+    uthread_yield();
+    printf("hello 1 after yield\n")
+	  return 0;
 }
 
 int main(void)
 {
-	uthread_t tid;
+	uthread_t tid1, tid2, tid3;
+  int* retval_ptr = malloc(sizeof(int));
+	tid1 = uthread_create(hello1, NULL);
+  tid2 = uthread_create(hello2, NULL);
+  tid3 = uthread_create(hello3, NULL);
 
-	tid = uthread_create(hello, NULL);
-	uthread_join(tid, NULL);
+	uthread_join(tid3, retval_ptr);
+  printf("exit after 3\n");
+  printf("zombie length %d\n", queue_length(zombie));
 
 	return 0;
 }

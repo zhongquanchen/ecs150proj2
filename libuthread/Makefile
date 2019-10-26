@@ -88,5 +88,5 @@ queue.o: queue.c queue.h
 
 clean:
 	@echo "CLEAN"
-	$(Q)rm -f $(lib) *.o *.a *.out
+	$(Q)rm -f $(lib) *.o *.a *.out test
 
