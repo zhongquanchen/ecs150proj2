@@ -17,6 +17,7 @@
 
 int thread3(void* arg)
 {
+	printf("first time in thread3\n");
 	uthread_yield();
 	return 0;
 }
@@ -35,13 +36,14 @@ int thread1(void* arg)
 {
 	uthread_create(thread2, NULL);
 	uthread_yield();
+	printf("thread1 is back, will exit soon\n");
 	return 0;
 }
 
 int main(void)
 {
 	int* retval_ptr = malloc(sizeof(int));
+	printf("enter main\n");
 	uthread_join(uthread_create(thread1, NULL), retval_ptr);
-	printf("zombie length \n", queue_length(zombie));
 	return 0;
 }

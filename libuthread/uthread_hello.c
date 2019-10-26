@@ -25,9 +25,9 @@ int hello2(void* arg)
 
 int hello1(void* arg)
 {
-    print("hello from hello 1\n");
+    printf("hello from hello 1\n");
     uthread_yield();
-    printf("hello 1 after yield\n")
+    printf("hello 1 after yield\n");
 	  return 0;
 }
 
@@ -41,7 +41,6 @@ int main(void)
 
 	uthread_join(tid3, retval_ptr);
   printf("exit after 3\n");
-  printf("zombie length %d\n", queue_length(zombie));
 
 	return 0;
 }
