@@ -101,9 +101,9 @@ int uthread_create(uthread_func_t func, void *arg)
 		fprintf(stderr,"ERROR: TID Overflow!\n");
 		return -1;
 	}
-    printf("before malloc, increate\n");
+    //printf("before malloc, increate\n");
 	struct u_thread* new_thread = (struct u_thread*)malloc(sizeof(struct u_thread));
-    printf("after malloc created\n");
+    //printf("after malloc created\n");
 	new_thread->u_tid = num_thread;
 	new_thread->u_state = Ready;
 	new_thread->retval = 0;
@@ -120,6 +120,19 @@ int uthread_create(uthread_func_t func, void *arg)
 
 void uthread_exit(int retval)
 {
+  struct u_thread* willexit=NULL;
+  struct u_thread* willrun=NULL;
+  int deqval1 = queue_dequeue(running,(void**)&willexit);
+  int deqval2 = queue_dequeue(ready,(void**)&willrun);
+  if(deqval1!=-1&deqval2!=-1){
+    willexit->u_state = Zombie;
+    willrun->u_state = Running;
+    queue_enqueue(zombie,willexit);
+    queue_enqueue(running,willrun);
+    uthread_ctx_switch(willexit->u_context, willrun->u_context);
+  }else{
+    return;
+  }
 	//struct u_thread
 }
 
@@ -127,6 +140,9 @@ int uthread_join(uthread_t tid, int *retval)
 {
   //placeholder
 	while(1){
+    //printf("length of running is%d\n",queue_length(running));
+    //printf("length of ready is%d\n",queue_length(ready));
+    //printf("main yielding\n");
     if(queue_length(ready)==0){
       return(-1);
     }
