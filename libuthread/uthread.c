@@ -66,7 +66,7 @@ uthread_t uthread_self(void)
     return -1;
   }
   struct u_thread* curr = NULL;
-  queue_dequeue(running,&curr);
+  queue_dequeue(running,(void**)&curr);
   queue_enqueue(running,curr);
   return curr->u_tid;
 }
@@ -80,11 +80,11 @@ void initialize()
 	ready = queue_create();
 	blocked = queue_create();
 	zombie = queue_create();
-	struct u_thread* main = malloc(sizeof(struct u_thread));
+	struct u_thread* main = (struct u_thread*)malloc(sizeof(struct u_thread));
 	main->u_tid = num_thread;//which is 0 right now
 	main->u_state = Running;
 	main->retval=0;
-	main->u_context = malloc(sizeof(uthread_ctx_t));
+	main->u_context = (uthread_ctx_t*)malloc(sizeof(uthread_ctx_t));
 	main->u_stack = uthread_ctx_alloc_stack();
 	main->u_context->uc_stack.ss_sp = main->u_stack;
 	main->u_context->uc_stack.ss_size = UTHREAD_STACK_SIZE;
@@ -101,12 +101,13 @@ int uthread_create(uthread_func_t func, void *arg)
 		fprintf(stderr,"ERROR: TID Overflow!\n");
 		return -1;
 	}
-
-	struct u_thread* new_thread = malloc(sizeof(struct u_thread));
+    printf("before malloc, increate\n");
+	struct u_thread* new_thread = (struct u_thread*)malloc(sizeof(struct u_thread));
+    printf("after malloc created\n");
 	new_thread->u_tid = num_thread;
 	new_thread->u_state = Ready;
 	new_thread->retval = 0;
-	new_thread->u_context = malloc(sizeof(uthread_ctx_t));
+	new_thread->u_context = (void*)malloc(sizeof(uthread_ctx_t));
 	new_thread->u_stack = uthread_ctx_alloc_stack();
 	int curr_retval = uthread_ctx_init(new_thread->u_context,new_thread->u_stack,func,arg);
 	if(curr_retval==-1){
@@ -130,7 +131,7 @@ int uthread_join(uthread_t tid, int *retval)
       return(-1);
     }
     uthread_yield();
-    return 0;
   }
+    return 0;
 	/* TODO Phase 3 */
 }

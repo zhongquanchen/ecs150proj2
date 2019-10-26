@@ -34,29 +34,59 @@
 #		@echo "clean"
 #		$(Q) rm -f $(lib) $(objs)
 
-test := test
-objs := uthread_hello.o queue.o context.o uthread.o
+#Target library
+#
+#lib := libuthread.a
+#obj := queue.o
+#
+#CC := gcc
+#CFLAGS := -Wall -Werror -g
+#
+#ifneq ($(V),1)
+#Q = @
+#endif
+#
+#libuthread.a: queue.o uthread.o context.o preempt.o
+#	@echo "AR libuthread.a"
+#	$(Q)ar rcs $@ $^
+#
+#preempt.o: preempt.c preempt.h
+#	@echo "CC $@"
+#	$(Q)$(CC) $(CFLAGS) -c -o $@ $<
+#
+#queue.o: queue.c queue.h
+#	@echo "CC $@"
+#	$(Q)$(CC) $(CFLAGS) -c -o $@ $<
+#
+#context.o: context.c context.h
+#	@echo "CC $@"
+#	$(Q)$(CC) $(CFLAGS) -c -o $@ $<
+#
+#uthread.o: uthread.c uthread.h context.h
+#	@echo "CC $@"
+#	$(Q)$(CC) $(CFLAGS) -c -o $@ $<
+#
+#clean:
+#	@echo "CLEAN"
+#	$(Q)rm -f $(lib) *.o *.a *.out
 
-CC 	:= gcc
-CFLAGS	:= -Wall -Werror
-CGLAGS	+= -g
 
-all: $(lib)
+test: uthread_hello.c uthread.o context.o preempt.o queue.o
+	gcc -o test uthread_hello.c uthread.o context.o preempt.o queue.o
+	
+uthread.o: uthread.c uthread.h
+	gcc -c uthread.c
 
-test: $(objs)
-	$(CC) -o $@ $<
+context.o: context.c context.h
+	gcc -c context.c
+
+preempt.o: preempt.c preempt.h
+	gcc -c preempt.c
 	
 queue.o: queue.c queue.h
-	$(CC) -c $^
+	gcc -c queue.c
 
-uthread.o: uthread.c uthread.h
-	$(CC) -c $^
-		
-context.o: context.c context.h
-	$(CC) -c $^
-	
-uthread_hello.o: uthread_hello.c uthread_hello.h
-	$(CC) -c $^
-	
 clean:
-	rm -f $(objs) $(test)
+	@echo "CLEAN"
+	$(Q)rm -f $(lib) *.o *.a *.out
+
