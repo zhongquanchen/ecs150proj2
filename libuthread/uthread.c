@@ -27,6 +27,7 @@ int num_thread=0;
 
 struct u_thread{
   uthread_t u_tid;
+  uthread_t parent_tid;
   enum state u_state;
   int retval;
   uthread_ctx_t* u_context;
@@ -34,9 +35,16 @@ struct u_thread{
 };
 
 
-//static u_thread* main_thread;
-/* tells create_thread() to create main thread first */
 static int init_tid = 0;
+
+//helper function to find a thread of certain pid
+int thread_match_pid(void*data, void*tid){
+  struct u_thread* curr_ptr = (struct thread*)data;
+  if(curr_ptr->u_tid == (*(uthread_t*)tid)){
+    return 1;
+  }
+  return 0;
+}
 
 void uthread_yield(void)
 {
@@ -65,6 +73,10 @@ uthread_t uthread_self(void)
   if(queue_length(running)==0){
     return -1;
   }
+  if(queue_length(running)>1){
+    printf("more than 1 running thread. uthread_self doesn't work.\n");
+    return -1;
+  }
   struct u_thread* curr = NULL;
   queue_dequeue(running,(void**)&curr);
   queue_enqueue(running,curr);
@@ -82,6 +94,7 @@ void initialize()
 	zombie = queue_create();
 	struct u_thread* main = (struct u_thread*)malloc(sizeof(struct u_thread));
 	main->u_tid = num_thread;//which is 0 right now
+  main->parent_tid =-1;
 	main->u_state = Running;
 	main->retval=0;
 	main->u_context = (uthread_ctx_t*)malloc(sizeof(uthread_ctx_t));
@@ -105,6 +118,7 @@ int uthread_create(uthread_func_t func, void *arg)
 	struct u_thread* new_thread = (struct u_thread*)malloc(sizeof(struct u_thread));
     //printf("after malloc created\n");
 	new_thread->u_tid = num_thread;
+  new_thread->parent_tid = -1;
 	new_thread->u_state = Ready;
 	new_thread->retval = 0;
 	new_thread->u_context = (void*)malloc(sizeof(uthread_ctx_t));
@@ -124,7 +138,20 @@ void uthread_exit(int retval)
   struct u_thread* willrun=NULL;
   int deqval1 = queue_dequeue(running,(void**)&willexit);
   int deqval2 = queue_dequeue(ready,(void**)&willrun);
+
   if(deqval1!=-1&deqval2!=-1){
+    if(willexit->parent_tid>-1){
+      struct* u_thread parent_thread = NULL;
+      queue_iterate(blocked,thread_match_pid,(void*)&willexit->parent_tid,(void**)&parent_thread);
+      if(parent_thread==NULL){
+        printf("can't find parent.\n");
+      }else{
+        parent_thread->u_state = Ready;
+        queue_delete(blocked,parent);
+        queue_enqueue(ready,parent);
+      }
+    }
+    willexit->retval = retval;
     willexit->u_state = Zombie;
     willrun->u_state = Running;
     queue_enqueue(zombie,willexit);
@@ -133,21 +160,70 @@ void uthread_exit(int retval)
   }else{
     return;
   }
-	//struct u_thread
 }
 
 int uthread_join(uthread_t tid, int *retval)
 {
   //placeholder
-	while(1){
+	//while(1){
     //printf("length of running is%d\n",queue_length(running));
     //printf("length of ready is%d\n",queue_length(ready));
     //printf("main yielding\n");
-    if(queue_length(ready)==0){
-      return(-1);
+    //if(queue_length(ready)==0){
+      //return(-1);
+    //}
+    //uthread_yield();
+  //}
+
+    self_tid = uthread_self();
+    struct u_thread* child_thread = NULL;
+    struct u_thread* parent_thread = NULL;
+    //if joining with main or with self
+    if(tid==0||tid==self_tid){
+      return -1;
     }
-    uthread_yield();
-  }
-    return 0;
-	/* TODO Phase 3 */
+
+    //find out if child is already dead
+    queue_iterate(zombie, thread_match_pid, (void*)&tid, (void**)&child_thread);
+    if(child_thread!=NULL){
+      //if already has a parent
+      if(child_thread->parent_tid!=-1){
+        return -1;
+      }
+      //save retval and delete child from the zombie queue;
+      *retval = child_thread->retval;
+      queue_delete(zombie, child_thread);
+      return 0;
+    }
+
+    //find out if child is in ready or Blocked
+    queue_iterate(ready, thread_match_pid, (void*)&tid, (void**)&child_thread);
+    queue_iterate(blocked, thread_match_pid, (void*)&tid, (void**)&child_thread);
+    if(child_thread==NULL){
+      //if can't find child anywhere
+      return -1;
+    }else{
+      //if already has a parent
+      if(child_thread->parent_tid!=-1){
+        return -1;
+      }
+      child_thread->parent_tid = self_tid;
+      //put parent in blocked, bring up first in Ready
+      struct u_thread* willrun = NULL;
+      int retdeq1=queue_dequeue(running,(void**)&parent_thread);
+      int retdeq2=queue_dequeue(ready,(void**)&willrun);
+      if(retdeq1!=-1&&retdeq2!=-1){
+        parent_thread->u_state = Blocked;
+        willrun->u_state = Running;
+        queue_enqueue(blocked,parent_thread);
+        queue_enqueue(running,willrun);
+        uthread_ctx_switch(parent_thread->u_context, willrun->u_context);
+
+        //back from blocked, child dead
+        *retval = child_thread->retval;
+        queue_delete(zombie, child_thread);
+        return 0;
+      }
+    }
+    return -1;
 }
