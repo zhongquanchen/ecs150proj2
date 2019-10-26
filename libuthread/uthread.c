@@ -25,7 +25,7 @@ static queue_t zombie;
 int initialized =0;
 int num_thread=0;
 
-struct TCB{
+struct u_thread{
   uthread_t u_tid;
   enum state u_state;
   int retval;
@@ -33,20 +33,40 @@ struct TCB{
   void* u_stack;
 };
 
-typedef struct TCB u_thread;
 
-static u_thread* main_thread;
+//static u_thread* main_thread;
 /* tells create_thread() to create main thread first */
 static int init_tid = 0;
 
 void uthread_yield(void)
 {
-	/* TODO Phase 2 */
-}
+	if(queue_length(ready)==0||queue_length(running)==0){
+    return;
+  }
+  struct u_thread* willrun = NULL;
+  struct u_thread* willyield = NULL;
+
+  int deqval1 = queue_dequeue(running,(void**)&willyield);
+  int deqval2 = queue_dequeue(ready,(void**)&willrun);
+
+  if(deqval1!=-1&&deqval2!=-1){
+    willrun->u_state = Running;
+    willyield->u_state = Ready;
+    queue_enqueue(running,willrun);
+    queue_enqueue(ready,willyield);
+    uthread_ctx_switch(willyield->u_context, willrun->u_context);
+  }else{
+    return;
+  }
+ }
 
 uthread_t uthread_self(void)
 {
-	/* TODO Phase 2 */
+  //if(queue_length(running)==0){
+    //return -1;
+  //}
+	//struct u_thread* curr_running = running->oldest->element_ptr;
+  //return curr_running->u_tid;
 }
 
 /* intialize the main thread */
@@ -58,7 +78,7 @@ void initialize()
 	ready = queue_create();
 	blocked = queue_create();
 	zombie = queue_create();
-	u_thread* main = malloc(sizeof(u_thread));
+	struct u_thread* main = malloc(sizeof(struct u_thread));
 	main->u_tid = num_thread;//which is 0 right now
 	main->u_state = Running;
 	main->retval=0;
@@ -80,7 +100,7 @@ int uthread_create(uthread_func_t func, void *arg)
 		return -1;
 	}
 
-	u_thread* new_thread = malloc(sizeof(u_thread));
+	struct u_thread* new_thread = malloc(sizeof(struct u_thread));
 	new_thread->u_tid = num_thread;
 	new_thread->u_state = Ready;
 	new_thread->retval = 0;
@@ -97,11 +117,18 @@ int uthread_create(uthread_func_t func, void *arg)
 
 void uthread_exit(int retval)
 {
-	/* TODO Phase 2 */
+	//struct u_thread
 }
 
 int uthread_join(uthread_t tid, int *retval)
 {
-	/* TODO Phase 2 */
+  //placeholder
+	while(1){
+    if(queue_length(ready)==0){
+      return(-1);
+    }
+    uthread_yield();
+    return 0;
+  }
 	/* TODO Phase 3 */
 }
