@@ -61,7 +61,7 @@ int queue_dequeue(queue_t queue, void **data)
         /* Return: -1 if @queue or @data are NULL, or if the queue is empty. */
         return -1;
     }
-	if(queue->size==1){
+	if(queue->size == 1){
         *data = queue->oldest->element_ptr;
         free(queue->oldest);//no need to free the newest because they now point at the same memory space
     } else {
@@ -76,34 +76,33 @@ int queue_dequeue(queue_t queue, void **data)
 
 int queue_delete(queue_t queue, void *data)
 {
-    struct ele_q *temp =malloc(sizeof(struct ele_q));
+    struct ele_q *temp = malloc(sizeof(struct ele_q));
     temp->next_ptr = queue->oldest;
     void* tempbuffer;
     for(int i=0; i<queue->size; i++) {
         if (temp->next_ptr->element_ptr == data) {
-            //MARK:- do the following
-            if(i==0){//found at oldest
-              free(temp);
-              temp = queue->oldest;
-              queue_dequeue(queue,&tempbuffer);
-              return 0;
-            }else if(i==queue->size-1){//found at newest
-              queue->newest = temp;
-              free(temp->next_ptr);
+            if(i == 0){//found at oldest
+                free(temp);
+                temp = queue->oldest;
+                queue_dequeue(queue,&tempbuffer);
+                return 0;
+            }else if(i == queue->size - 1){//found at newest
+                queue->newest = temp;
+                free(temp->next_ptr);
             }else{//found in the middle
-              struct ele_q *deleted_item = temp->next_ptr;
-              temp->next_ptr = temp->next_ptr->next_ptr;
-              free(deleted_item);
+                struct ele_q *deleted_item = temp->next_ptr;
+                temp->next_ptr = temp->next_ptr->next_ptr;
+                free(deleted_item);
             }
             queue->size--;
             return 0;
         }else{
-          if(i==0){
-            free(temp);
-            temp = queue->oldest;
-          }else{
-            temp = temp->next_ptr;
-          }
+            if(i == 0){
+                free(temp);
+                temp = queue->oldest;
+            }else{
+                temp = temp->next_ptr;
+            }
         }
     }
     return -1;
@@ -111,29 +110,27 @@ int queue_delete(queue_t queue, void *data)
 
 int queue_iterate(queue_t queue, queue_func_t func, void *arg, void **data)
 {
-  if(queue==NULL||func==NULL){
-      return -1;
-  }
-  if(queue->oldest==NULL){
-      return 0;
-  }
-  int retval =0;
-  struct ele_q *itr =queue->oldest;
-  for(int i=0; i<queue->size; i++){
-      retval = func(itr->element_ptr,arg);
-      if(retval==1){
-          *data = itr->element_ptr;
-          break;
-      }
-      itr=itr->next_ptr;
-  }
-  return 0;
+    if(queue == NULL || func == NULL)
+        return -1;
+    if(queue->oldest == NULL)
+        return 0;
+    /* iterate every element and check the value of address */
+    int retval =0;
+    struct ele_q *itr = queue->oldest;
+    for(int i=0; i<queue->size; i++){
+        retval = func(itr->element_ptr,arg);
+        if(retval == 1){
+            *data = itr->element_ptr;
+            break;
+        }
+        itr = itr->next_ptr;
+    }
+    return 0;
 }
 
 int queue_length(queue_t queue)
 {
-    if(queue->oldest == NULL){
+    if(queue->oldest == NULL)
         return 0;
-    }
     return queue->size;
 }
