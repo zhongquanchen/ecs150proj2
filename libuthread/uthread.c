@@ -40,41 +40,40 @@ static int init_tid = 0;
 
 void uthread_yield(void)
 {
-	if(queue_length(ready)==0||queue_length(running)==0){
-    return;
-  }
-  struct u_thread* willrun = NULL;
-  struct u_thread* willyield = NULL;
+    if(queue_length(ready) == 0|| queue_length(running) == 0)
+        return;
+    struct u_thread* willrun = NULL;
+    struct u_thread* willyield = NULL;
 
-  int deqval1 = queue_dequeue(running,(void**)&willyield);
-  int deqval2 = queue_dequeue(ready,(void**)&willrun);
+    int deqval1 = queue_dequeue(running,(void**)&willyield);
+    int deqval2 = queue_dequeue(ready,(void**)&willrun);
 
-  if(deqval1!=-1&&deqval2!=-1){
-    willrun->u_state = Running;
-    willyield->u_state = Ready;
-    queue_enqueue(running,willrun);
-    queue_enqueue(ready,willyield);
-    uthread_ctx_switch(willyield->u_context, willrun->u_context);
-  }else{
-    return;
-  }
+    if(deqval1!=-1&&deqval2!=-1){
+        willrun->u_state = Running;
+        willyield->u_state = Ready;
+        queue_enqueue(running,willrun);
+        queue_enqueue(ready,willyield);
+        uthread_ctx_switch(willyield->u_context, willrun->u_context);
+    }else{
+        return;
+    }
  }
 
 uthread_t uthread_self(void)
 {
-  if(queue_length(running)==0){
-    return -1;
-  }
-  struct u_thread* curr = NULL;
-  queue_dequeue(running,(void**)&curr);
-  queue_enqueue(running,curr);
-  return curr->u_tid;
+    if(queue_length(running)==0)
+        return -1;
+    
+    struct u_thread* curr = NULL;
+    queue_dequeue(running,(void**)&curr);
+    queue_enqueue(running,curr);
+    return curr->u_tid;
 }
 
-/* intialize the main thread */
+/* intialize the main thread
+ * this function will call when intialize = 0 */
 void initialize()
 {
-    /* FIXME- need to add the running state for main thread later */
 	initialized=1;
 	running = queue_create();
 	ready = queue_create();
@@ -120,34 +119,36 @@ int uthread_create(uthread_func_t func, void *arg)
 
 void uthread_exit(int retval)
 {
-  struct u_thread* willexit=NULL;
-  struct u_thread* willrun=NULL;
-  int deqval1 = queue_dequeue(running,(void**)&willexit);
-  int deqval2 = queue_dequeue(ready,(void**)&willrun);
-  if(deqval1!=-1&deqval2!=-1){
-    willexit->u_state = Zombie;
-    willrun->u_state = Running;
-    queue_enqueue(zombie,willexit);
-    queue_enqueue(running,willrun);
-    uthread_ctx_switch(willexit->u_context, willrun->u_context);
-  }else{
-    return;
+    struct u_thread* willexit=NULL;
+    struct u_thread* willrun=NULL;
+    
+    int deqval1 = queue_dequeue(running,(void**)&willexit);
+    int deqval2 = queue_dequeue(ready,(void**)&willrun);
+    
+    if(deqval1!=-1&deqval2!=-1){
+        willexit->u_state = Zombie;
+        willrun->u_state = Running;
+        queue_enqueue(zombie,willexit);
+        queue_enqueue(running,willrun);
+        uthread_ctx_switch(willexit->u_context, willrun->u_context);
+    }else{
+        return;
   }
-	//struct u_thread
 }
 
 int uthread_join(uthread_t tid, int *retval)
 {
-  //placeholder
-	while(1){
-    //printf("length of running is%d\n",queue_length(running));
-    //printf("length of ready is%d\n",queue_length(ready));
-    //printf("main yielding\n");
-    if(queue_length(ready)==0){
-      return(-1);
-    }
-    uthread_yield();
-  }
+//  //placeholder
+//	while(1){
+//    //printf("length of running is%d\n",queue_length(running));
+//    //printf("length of ready is%d\n",queue_length(ready));
+//    //printf("main yielding\n");
+//    if(queue_length(ready)==0){
+//      return(-1);
+//    }
+//    uthread_yield();
+//  }
+//    return 0;
+//	/* TODO Phase 3 */
     return 0;
-	/* TODO Phase 3 */
 }
