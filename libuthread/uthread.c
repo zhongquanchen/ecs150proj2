@@ -62,11 +62,13 @@ void uthread_yield(void)
 
 uthread_t uthread_self(void)
 {
-  //if(queue_length(running)==0){
-    //return -1;
-  //}
-	//struct u_thread* curr_running = running->oldest->element_ptr;
-  //return curr_running->u_tid;
+  if(queue_length(running)==0){
+    return -1;
+  }
+  struct u_thread* curr = NULL;
+  queue_dequeue(running,&curr);
+  queue_enqueue(running,curr);
+  return curr->u_tid;
 }
 
 /* intialize the main thread */
