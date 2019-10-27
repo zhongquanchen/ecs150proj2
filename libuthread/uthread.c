@@ -163,25 +163,16 @@ void uthread_exit(int retval)
 
 int uthread_join(uthread_t tid, int *retval)
 {
-  //placeholder
-	//while(1){
-    //printf("length of running is%d\n",queue_length(running));
-    //printf("length of ready is%d\n",queue_length(ready));
-    //printf("main yielding\n");
-    //if(queue_length(ready)==0){
-      //return(-1);
-    //}
-    //uthread_yield();
-  //}
     uthread_t self_tid = uthread_self();
     struct u_thread* child_thread = NULL;
     struct u_thread* parent_thread = NULL;
-    //if joining with main or with self
+
+    /* if joining with main or with self */
     if(tid==0||tid==self_tid){
       return -1;
     }
 
-    //find out if child is already dead
+    /* find out if child is already dead */
     queue_iterate(zombie, thread_match_pid, (void*)&tid, (void**)&child_thread);
     if(child_thread!=NULL){
       //if already has a parent
@@ -195,17 +186,17 @@ int uthread_join(uthread_t tid, int *retval)
     }
     //printf("in uthread_join tid is%d child is not zombie\n", tid);
 
-    //find out if child is in ready or Blocked
+    /* find out if child is in ready or Blocked */
     queue_iterate(ready, thread_match_pid, (void*)&tid, (void**)&child_thread);
     queue_iterate(blocked, thread_match_pid, (void*)&tid, (void**)&child_thread);
-    //printf("in uthread_join child tid is%d after two iteration\n", tid);
-    if(child_thread==NULL){
+    //printf("in uthread_join child tid is %d after two iteration\n", tid);
+    if(child_thread == NULL){
       //if can't find child anywhere
       return -1;
     }else{
-      //if already has a parent
-      if(child_thread->parent_tid>-1){
-        //printf("in uthread_join child tid is%d already have parent parent pid is%d\n", tid, child_thread->parent_tid);
+      /* if the child already has a parent, return false */
+      if(child_thread->parent_tid > -1){
+        printf("in uthread_join child tid is%d already have parent parent pid is%d\n", tid, child_thread->parent_tid);
         return -1;
       }
       //printf("in uthread_join child tid is%d in blocked or ready\n", tid);
@@ -222,8 +213,17 @@ int uthread_join(uthread_t tid, int *retval)
         //printf("in join, before swaping context\n");
         uthread_ctx_switch(parent_thread->u_context, willrun->u_context);
 
-        //back from blocked, child dead
-        *retval = child_thread->retval;
+        // printf("t1 is dead, I am running %d \n", uthread_self());
+        // printf("zombie length %d\n", queue_length(zombie));
+        // printf(" what is child_thread %d\n", child_thread->u_tid);
+
+        /* detect if @retval args is a NULL, then assign value
+         * back from blocked, child dead */
+        if(retval != NULL)
+            retval = child_thread->retval;
+        // printf("before it gets delete\n");
+        // printf("ret val is %d \n", child_thread->retval);
+        // printf("retval is %d \n", retval);
         queue_delete(zombie, child_thread);
         //printf("zombie length %d\n", queue_length(zombie));
         return 0;

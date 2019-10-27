@@ -17,16 +17,18 @@
 
 int thread3(void* arg)
 {
+	printf("first time in thread3\n");
 	uthread_yield();
-	printf("thread%d\n", uthread_self());
 	return 0;
 }
 
 int thread2(void* arg)
 {
-	uthread_create(thread3, NULL);
+	uthread_t tid = uthread_create(thread3, NULL);
+	int* retval_ptr = malloc(sizeof(int));
+	uthread_join(tid, retval_ptr);
+	printf("retval_ptr %d\n", retval_ptr);
 	uthread_yield();
-	printf("thread%d\n", uthread_self());
 	return 0;
 }
 
@@ -34,13 +36,14 @@ int thread1(void* arg)
 {
 	uthread_create(thread2, NULL);
 	uthread_yield();
-	printf("thread%d\n", uthread_self());
-	uthread_yield();
+	printf("thread1 is back, will exit soon\n");
 	return 0;
 }
 
 int main(void)
 {
-	uthread_join(uthread_create(thread1, NULL), NULL);
+	int* retval_ptr = malloc(sizeof(int));
+	printf("enter main\n");
+	uthread_join(uthread_create(thread1, NULL), retval_ptr);
 	return 0;
 }
