@@ -4,7 +4,7 @@
 - Queue implement
 	- Detele 
 	We implement the queue just like normal queue struct. For the 
-	[queue_delete()] (https://github.com/zhongquanchen/ecs150proj2/blob/a91cac83b8121994c44e50d56bd17bd812bd6ccc/libuthread/queue.c#L77), we compare the address of two value, if it points to
+	[queue_delete()](https://github.com/zhongquanchen/ecs150proj2/blob/a91cac83b8121994c44e50d56bd17bd812bd6ccc/libuthread/queue.c#L77), we compare the address of two value, if it points to
 	the same address, then it will detele that pointer in the queue.
 
 	- Iterate
@@ -43,7 +43,7 @@
 	This data structure will capture signal from time alarm. The signal name 
 	is ` SIGVTALRM `
 
-	- ![PREEMPT_START(VOID)](https://github.com/zhongquanchen/ecs150proj2/blob/a91cac83b8121994c44e50d56bd17bd812bd6ccc/libuthread/preempt.c#L44)
+	- [PREEMPT_START(VOID)](https://github.com/zhongquanchen/ecs150proj2/blob/a91cac83b8121994c44e50d56bd17bd812bd6ccc/libuthread/preempt.c#L44)
 	This function will set up a signal reciever and it will capture signal
 	of VIRTUAL ALARM type. In the function, if there is a signal captured, 
 	it will transfer to a signal handler, name ` TIMER_HANDLE(int sig_num) `function. 
@@ -53,7 +53,7 @@
 	During two create, we set up a failure return, in case the signal or
 	alarm create fail.
 
-	- ![PREEMPT_ENABLE(VOID)](https://github.com/zhongquanchen/ecs150proj2/blob/a91cac83b8121994c44e50d56bd17bd812bd6ccc/libuthread/preempt.c#L36)
+	- [PREEMPT_ENABLE(VOID)](https://github.com/zhongquanchen/ecs150proj2/blob/a91cac83b8121994c44e50d56bd17bd812bd6ccc/libuthread/preempt.c#L36)
 	This function will add a signal flag to the mask of the static vairable
 	` sa `. When sa is initialize in ` preempt_start() ` method, the mask of
 	sa is set to empty, which mean that it will not capture any signal.
@@ -61,7 +61,7 @@
 	In this function, we add ` SIGVTALRM ` flag in sa's mask so that it can
 	listen to the flag porperly.
 
-	- ![PREEMPT_DISABLE(VOID)](https://github.com/zhongquanchen/ecs150proj2/blob/a91cac83b8121994c44e50d56bd17bd812bd6ccc/libuthread/preempt.c#L28)
+	- [PREEMPT_DISABLE(VOID)](https://github.com/zhongquanchen/ecs150proj2/blob/a91cac83b8121994c44e50d56bd17bd812bd6ccc/libuthread/preempt.c#L28)
 	The opposite of preempt_enable. It will delete the flag ` SIGVTALRM ` in
 	sa' mask.
 
