@@ -33,21 +33,22 @@ int num_thread=0;
  * 6. u_stack a stack for thread
  */
 struct u_thread{
-  uthread_t u_tid;
-  int parent_tid;
-  enum state u_state;
-  int retval;
-  uthread_ctx_t* u_context;
-  void* u_stack;
+    uthread_t u_tid;
+    int parent_tid;
+    enum state u_state;
+    int retval;
+    uthread_ctx_t* u_context;
+    void* u_stack;
 };
 
 //helper function to find a thread of certain pid
-int thread_match_pid(void*data, void*tid){
-  struct u_thread* curr_ptr = (struct thread*)data;
-  if(curr_ptr->u_tid == (*(uthread_t*)tid)){
-    return 1;
-  }
-  return 0;
+int thread_match_pid(void* data, void* tid){
+    //CHANGED HERE : cancel the casting because data is a strcut thread type	
+    struct u_thread* curr_ptr = data;
+    if(curr_ptr->u_tid == (*(uthread_t*)tid)){
+        return 1;
+    }
+    return 0;
 }
 
 void uthread_yield(void)

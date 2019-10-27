@@ -37,5 +37,45 @@
 	exit and become an zombie state, the parent thread will then collect the 
 	value from child. 
 
-## Phase 4
-- NOT YET
+## Phase 4 ##
+- Preemption implement 
+	- First we declare a static variable call ` static struct sigaction sa `
+	This data structure will capture signal from time alarm. The signal name	is ` SIGVTALRM `
+
+	- [PREEMPT_START(VOID)]()
+	This function will set up a signal reciever and it will capture signal
+	of VIRTUAL ALARM type. In the function, if there is a signal captured, 
+	it will transfer to a signal handler, name ` TIMER_HANDLE(int sig_num) `	function. After that, we set an timer alarm for user level thread.
+	This alarm will take the desire second to trigger signal. 
+	
+	During two create, we set up a failure return, in case the signal or
+	alarm create fail.
+
+	- [PREEMPT_ENABLE(VOID)]()
+	This function will add a signal flag to the mask of the static vairable
+	` sa `. When sa is initialize in ` preempt_start() ` method, the mask of
+	sa is set to empty, which mean that it will not capture any signal.
+
+	In this function, we add ` SIGVTALRM ` flag in sa's mask so that it can
+	listen to the flag porperly.
+
+	- [PREEMPT_DISABLE(VOID)]()
+	The opposite of preempt_enable. It will delete the flag ` SIGVTALRM ` in
+	sa' mask.
+
+	- To make it work in uthread.c, we put [PREEMPT_START(VOID)]() in [UTHRE	AD_CREATE]() when the main thread is create. And enable it after they 
+	have a context_switch in uthread in order to protect sharing data.
+
+ 	
+
+
+
+
+
+
+
+
+
+
+
+

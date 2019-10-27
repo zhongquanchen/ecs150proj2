@@ -50,7 +50,7 @@ void preempt_start(void)
      * 3.set sa.handler to the address of handler function
      * 4.empyt the set that will be blocked in sa_mask */
     struct itimerval timer;
-    memset(&sa, 0, sizeof(sa));
+    //memset(&sa, 0, sizeof(sa));
     sa.sa_handler = &timer_handler;
     sigemptyset(&sa.sa_mask);
 
