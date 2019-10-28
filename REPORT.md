@@ -34,7 +34,7 @@
 	- [UTHREAD_JOIN()](https://github.com/zhongquanchen/ecs150proj2/blob/a91cac83b8121994c44e50d56bd17bd812bd6ccc/libuthread/uthread.c#L191)
 	Will set itself into block queue, and swap it with the thread it join with.
 	It will wait until the child thread finish its jobs. When the child thread
-	exit and become an zombie state, the parent thread will then collect the 
+	exit and become an zombie state, the parent thread will then collect the
 	value from child. 
 
 ## Phase 4 ##
@@ -68,7 +68,8 @@
 	- To make it work in uthread.c, we put [PREEMPT_START(VOID)](https://github.com/zhongquanchen/ecs150proj2/blob/a91cac83b8121994c44e50d56bd17bd812bd6ccc/libuthread/preempt.c#L44) in [UTHRE	AD_CREATE](https://github.com/zhongquanchen/ecs150proj2/blob/a91cac83b8121994c44e50d56bd17bd812bd6ccc/libuthread/uthread.c#L129) when the main thread is create. And enable it after they 
 	have a context_switch in uthread in order to protect sharing data.
 
- 	
+	- REFERECNES
+	For phase4 we use [reference](http://www.informit.com/articles/article.aspx?p=23618&seqNum=14) to set up our [preempt_start()](https://github.com/zhongquanchen/ecs150proj2/blob/a91cac83b8121994c44e50d56bd17bd812bd6ccc/libuthread/preempt.c#L44)  	
 
 
 

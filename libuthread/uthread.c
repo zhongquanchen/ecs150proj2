@@ -43,7 +43,7 @@ struct u_thread{
 
 //helper function to find a thread of certain pid
 int thread_match_pid(void* data, void* tid){
-    //CHANGED HERE : cancel the casting because data is a strcut thread type	
+    //CHANGED HERE : cancel the casting because data is a strcut thread type
     struct u_thread* curr_ptr = data;
     if(curr_ptr->u_tid == (*(uthread_t*)tid)){
         return 1;
@@ -136,9 +136,7 @@ int uthread_create(uthread_func_t func, void *arg)
   	}
     /* Create a new thread
      * assign value to new thread, same as initialize() */
-    //printf("before malloc, increate\n");
     struct u_thread* new_thread = (struct u_thread*)malloc(sizeof(struct u_thread));
-    //printf("after malloc created\n");
     new_thread->u_tid = num_thread;
     new_thread->parent_tid = -1;
     new_thread->u_state = Ready;
@@ -214,7 +212,6 @@ int uthread_join(uthread_t tid, int *retval)
       queue_delete(zombie, child_thread);
       return 0;
     }
-    //printf("in uthread_join tid is%d child is not zombie\n", tid);
 
     /* To check if child is in ready or running state
      * If the child is in those state, its parent will put into block state
@@ -224,13 +221,12 @@ int uthread_join(uthread_t tid, int *retval)
      */
     queue_iterate(ready, thread_match_pid, (void*)&tid, (void**)&child_thread);
     queue_iterate(blocked, thread_match_pid, (void*)&tid, (void**)&child_thread);
-    //printf("in uthread_join child tid is %d after two iteration\n", tid);
+
     if(child_thread == NULL)
         return -1;
       /* if the child already has a parent, return false */
     if(child_thread->parent_tid > -1)
         return -1;
-    //printf("in uthread_join child tid is%d in blocked or ready\n", tid);
     child_thread->parent_tid = self_tid;
 
     struct u_thread* willrun = NULL;

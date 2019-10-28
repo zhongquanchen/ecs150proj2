@@ -18,7 +18,6 @@ static struct sigaction sa;
 
 void timer_handler (int sig_num)
 {
-    //printf("i gonna yield \n");
     uthread_yield();
 }
 
@@ -26,22 +25,15 @@ void timer_handler (int sig_num)
 void preempt_disable(void)
 {
     sigdelset(&sa.sa_mask, SIGVTALRM);
-    // if( !sigismember(&sa.sa_mask, SIGVTALRM) )
-    //     printf("SIGVTALRM is no longer in set\n");
-    // else { printf("disable, I am still in sa_mask \n"); };
 }
 
 void preempt_enable(void)
 {
   	sigaddset(&sa.sa_mask, SIGVTALRM);
-    // if( sigismember(&sa.sa_mask, SIGVTALRM) )
-    //     printf("SIGVTALRM has added to sa_mask\n");
-    // else { printf("I have been deleted\n"); }
 }
 
 void preempt_start(void)
 {
-    //printf("preempt created()\n");
     /* Initialize sigaction
      * 1.define a timer for alarm setting
      * 2.empty sa using memset
@@ -57,7 +49,6 @@ void preempt_start(void)
         perror("signal create fial\n");
         exit(1);
     }
-    //printf("an signal has created \n");
     /* Initialize timer set up alarm */
     timer.it_value.tv_sec = 0;
     timer.it_value.tv_usec = INTERVAL;
@@ -69,6 +60,4 @@ void preempt_start(void)
         perror("create alarm fail\n");
         exit(1);
     }
-    //printf("an alarm has created\n");
-
 }
