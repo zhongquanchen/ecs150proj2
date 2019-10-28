@@ -64,12 +64,12 @@ void uthread_yield(void)
     int deqval2 = queue_dequeue(ready,(void**)&will_run);
 
     if (deqval1 != -1 && deqval2 != -1) {
+        preempt_disable();
         will_run->u_state = Running;
         will_yield->u_state = Ready;
         queue_enqueue(running, will_run);
         queue_enqueue(ready, will_yield);
 
-        preempt_disable();
         uthread_ctx_switch(will_yield->u_context, will_run->u_context);
         preempt_enable();
     }else{
@@ -161,6 +161,7 @@ void uthread_exit(int retval)
     int deqval2 = queue_dequeue(ready,(void**)&will_run);
 
     if(deqval1 != -1 && deqval2 != -1) {
+        preempt_disable();
         if(will_exit->parent_tid > -1) {
             struct u_thread* parent_thread = NULL;
             queue_iterate(blocked,thread_match_pid, (void*)&will_exit->parent_tid, (void**)&parent_thread);
@@ -180,7 +181,6 @@ void uthread_exit(int retval)
         queue_enqueue(zombie,will_exit);
         queue_enqueue(running,will_run);
 
-        preempt_disable();
         uthread_ctx_switch(will_exit->u_context, will_run->u_context);
         preempt_enable();
     }else { return; }
@@ -233,11 +233,11 @@ int uthread_join(uthread_t tid, int *retval)
     int retdeq1=queue_dequeue(running,(void**)&parent_thread);
     int retdeq2=queue_dequeue(ready,(void**)&willrun);
     if(retdeq1 != -1 && retdeq2 != -1) {
+        preempt_disable();
         parent_thread->u_state = Blocked;
         willrun->u_state = Running;
         queue_enqueue(blocked,parent_thread);
         queue_enqueue(running,willrun);
-        preempt_disable();
         uthread_ctx_switch(parent_thread->u_context, willrun->u_context);
         preempt_enable();
         /* detect if @retval args is a NULL, then assign value
