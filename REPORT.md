@@ -73,6 +73,18 @@
 
 
 ## TESTING ##
+- Testing queue.c 
+	-For this part we checked the queue function by using assert. If any test fail it will directly return and end the 
+	program. Each function in queue.c is independent and ` test() ` method include all other test case. So, in main()
+	you just have to call one method.
+
+- Testing uthread
+	- For this part we used professor's testing file.
+	
+- Testing preemption
+	- For this part, we called two thread that will switch automatically to check if the preempt will yield the uthread 
+	and switch to another.
+	
 
 
 
