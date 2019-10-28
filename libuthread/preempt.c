@@ -12,11 +12,9 @@
 //define a static sigaction
 static struct sigaction sa;
 
-/*
- * Frequency of preemption
- * 100Hz is 100 times per second
- */
-#define HZ 1
+
+#define HZ 100
+#define INTERVAL 1000000/100
 
 void timer_handler (int sig_num)
 {
@@ -51,7 +49,7 @@ void preempt_start(void)
      * 4.empyt the set that will be blocked in sa_mask */
     struct itimerval timer;
     //memset(&sa, 0, sizeof(sa));
-    sa.sa_handler = &timer_handler;
+    sa.sa_handler = timer_handler;
     sigemptyset(&sa.sa_mask);
 
     /* detect if sigaction has created succussful */
@@ -62,9 +60,9 @@ void preempt_start(void)
     //printf("an signal has created \n");
     /* Initialize timer set up alarm */
     timer.it_value.tv_sec = 0;
-    timer.it_value.tv_usec = HZ;
+    timer.it_value.tv_usec = INTERVAL;
     timer.it_interval.tv_sec = 0;
-    timer.it_interval.tv_usec = HZ;
+    timer.it_interval.tv_usec = INTERVAL;
 
     /* detect if alarm has created succussful */
     if( setitimer(ITIMER_VIRTUAL, &timer, NULL) == -1 ) {

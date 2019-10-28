@@ -27,10 +27,10 @@ queue_t queue_create(void)
 
 int queue_destroy(queue_t queue)
 {
-    while(queue_length(queue) != 0){
-        void* nulladdr;
-        queue_dequeue(queue, &nulladdr);
-    }
+    if (queue == NULL)
+        return -1;
+    while(queue_length(queue) != 0)
+        return -1;
     free(queue);
     return 0;
 }
