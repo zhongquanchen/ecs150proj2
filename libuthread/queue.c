@@ -21,6 +21,9 @@ queue_t queue_create(void)
 {
     queue_t my_queue;
     my_queue = malloc(sizeof(struct queue));
+    if (my_queue == NULL){
+	return NULL;
+    }
     my_queue->size = 0;
     return my_queue;
 }
@@ -37,6 +40,9 @@ int queue_destroy(queue_t queue)
 
 int queue_enqueue(queue_t queue, void *data)
 {
+    if (queue == NULL || data == NULL){
+	return -1;
+    }
     /* malloc a new element location and assert new_ele for it property */
     /* assert will automatic detect & abort function if malloc not success */
     struct ele_q* new_element = malloc(sizeof(struct ele_q));
@@ -57,7 +63,7 @@ int queue_enqueue(queue_t queue, void *data)
 
 int queue_dequeue(queue_t queue, void **data)
 {
-    if(queue_length(queue) == 0){
+    if(queue == NULL || data == NULL || queue_length(queue) == 0){
         /* Return: -1 if @queue or @data are NULL, or if the queue is empty. */
         return -1;
     }
@@ -76,6 +82,10 @@ int queue_dequeue(queue_t queue, void **data)
 
 int queue_delete(queue_t queue, void *data)
 {
+    if(queue == NULL || data == NULL || queue_length(queue) == 0){
+	/* Return: -1 if @queue or @data are NULL, or if the queue is empty. */
+	return -1;
+    }
     struct ele_q *temp = malloc(sizeof(struct ele_q));
     temp->next_ptr = queue->oldest;
     void* tempbuffer;
